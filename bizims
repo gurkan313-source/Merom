@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Seni Seviyorum 🤍</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 24px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(251, 111, 146, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .heart {
+            font-size: 40px;
+            color: #ff4d6d;
+            margin-bottom: 15px;
+            animation: pulse 1.5s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .card {
+            min-height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .message {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #4a4a4a;
+            font-weight: 500;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .message.fade {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            background-color: #ff4d6d;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+            transition: transform 0.1s ease, background-color 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            background-color: #ff2a55;
+        }
+
+        .decision-buttons {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .btn-decision {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            min-width: 100px;
+            touch-action: none; /* Mobilde kaydırmayı engeller */
+        }
+
+        .btn-yes {
+            background-color: #2ec4b6;
+            color: white;
+            box-shadow: 0 4px 10px rgba(46, 196, 182, 0.3);
+        }
+
+        .btn-no {
+            background-color: #e63946;
+            color: white;
+            position: absolute;
+            z-index: 100;
+        }
+
+        .date-picker-container {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .date-input {
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid #ffc2d1;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            color: #4a4a4a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="main-container">
+        <div class="heart" onclick="makeFullScreen()">❤️</div>
+        
+        <div class="card">
+            <p class="message" id="msg-text">Şu an aramız biraz limoni olabilir ama bu seni ne kadar çok sevdiğimi asla değiştirmiyor. Başlamak için butona basabilirsin. ✨</p>
+        </div>
+
+        <div class="btn-container" id="action-area">
+            <button class="btn" id="main-btn" onclick="nextMessage()">Beni Ne Kadar Çok Seviyorsun? ✨</button>
+        </div>
+
+        <div class="date-picker-container" id="date-area">
+            <p style="color: #4a4a4a; font-weight: 600; margin-bottom: 10px;">En yakın ne zaman buluşuyoruz? En kısa zamanı seç sevgilim: 👇</p>
+            <input type="date" class="date-input" id="date-picker">
+            <button class="btn" style="background-color: #2ec4b6;" onclick="sendDate()">Buluşma Gününü Onayla ☕</button>
+        </div>
+    </div>
+
+    <script>
+        const messages = [
+            "Şu an aramız biraz limoni olabilir ama bu seni ne kadar çok sevdiğimi asla değiştirmiyor. İyi ki varsın. ✨",
+            "Sana olan sevgim, o anki kırgınlıklarımızdan her zaman çok daha büyük. Seni kırmak isteyeceğim en son şey. 🤍",
+            "Tartışsak da, anlaşamasak da günün sonunda sadece sana sarılmak istiyorum. 🥺",
+            "Sen benim hayatımda başıma gelen en güzel şeysin. Bunu hiçbir kavganın gölgelemesine izin vermeyelim. 🕊️",
+            "Haklı ya da haksız olmak umurumda değil, sadece senin yüzün gülsün istiyorum. Seni çok seviyorum. 🌹",
+            "Bütün bu güzel sözlerden sonra... Benimle barışıp en kısa zamanda tatlı bir buluşmaya var mısın?"
+        ];
+
+        let currentIndex = 0;
+
+        function makeFullScreen() {
+            const docEl = document.documentElement;
+            if (docEl.requestFullscreen) docEl.requestFullscreen();
+            else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+        }
+
+        function nextMessage() {
+            makeFullScreen();
+            const msgEl = document.getElementById('msg-text');
+            msgEl.classList.add('fade');
+            
+            setTimeout(() => {
+                currentIndex++;
+                
+                if (currentIndex === messages.length - 1) {
+                    msgEl.innerText = messages[currentIndex];
+                    msgEl.classList.remove('fade');
+                    showDecisionButtons();
+                } else {
+                    msgEl.innerText = messages[currentIndex];
+                    msgEl.classList.remove('fade');
+                }
+            }, 400);
+        }
+
+        function showDecisionButtons() {
+            const actionArea = document.getElementById('action-area');
+            actionArea.innerHTML = `
+                <div class="decision-buttons">
+                    <button class="btn-decision btn-yes" onclick="showDatePicker()">Evet 😍</button>
+                    <button class="btn-decision btn-no" id="no-btn" ontouchstart="evadeButton(event)" onmouseover="evadeButton(event)" onclick="evadeButton(event)">Hayır 😢</button>
+                </div>
+            `;
+        }
+
+        // Butonun sadece ekran sınırlarında kaçmasını sağlayan güvenli mobil kod
+        function evadeButton(e) {
+            if(e) e.preventDefault();
+            const noBtn = document.getElementById('no-btn');
+            
+            // Ekran boyutlarını alıp butonun taşmasını engelleme limitleri
+            const padding = 40;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+            
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        }
+
+        function showDatePicker() {
+            const noBtn = document.getElementById('no-btn');
+            if (noBtn) noBtn.remove();
+
+            document.getElementById('msg-text').innerText = "Harika! O zaman hemen tarihimizi belirleyelim. ❤️";
+            document.getElementById('action-area').style.display = 'none';
+            
+            const today = new Date().toISOString().split('T')[0];
+            const datePicker = document.getElementById('date-picker');
+            datePicker.min = today;
+            datePicker.value = today;
+            
+            document.getElementById('date-area').style.display = 'flex';
+        }
+
+        function sendDate() {
+            const selectedDate = document.getElementById('date-picker').value;
+            if(!selectedDate) {
+                alert("Lütfen bir tarih seç kralım!");
+                return;
+            }
+            
+            const dateParts = selectedDate.split('-');
+            const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+
+            document.getElementById('date-area').style.display = 'none';
+            document.getElementById('msg-text').innerHTML = `
+                🎉 Buluşmamız ayarlandı! <br><br>
+                📅 <strong>${formattedDate}</strong> tarihinde seninleyim. <br><br>
+                Seni çok seviyorum, sabırsızlıkla bekliyorum! ❤️
+            `;
+        }
+    </script>
+</body>
+</html>
